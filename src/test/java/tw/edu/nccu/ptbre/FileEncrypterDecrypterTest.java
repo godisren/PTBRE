@@ -38,25 +38,15 @@ public class FileEncrypterDecrypterTest {
 		SecretKey recoverSecretKey = new SecretKeySpec(skBytes, 0, skBytes.length, "AES");
 		Assert.assertArrayEquals(skBytes, recoverSecretKey.getEncoded());
 		
-		
-		// rebuild key using SecretKeySpec
-//		SecretKey originalKey = new SecretKeySpec(recoverSkBytes, 0, recoverSkBytes.length, "AES"); 
-		
-//		Assert.assertArrayEquals(skBytes, originalKey.getEncoded());
-//		recoverSecretKey = new SecretKeySpec(recoverSkBytes, 0, recoverSkBytes.length, "AES");
-//		Assert.assertArrayEquals(skBytes, recoverSecretKey.getEncoded());
-		
 		String cipher = "AES/CBC/PKCS5Padding";
 		FileEncrypterDecrypter encryptor = new FileEncrypterDecrypter(secretKey, cipher);
 		
 		Path path = Paths.get("./output/test.txt");
-	    String content = Files.readAllLines(path).get(0);
+		String content = new String(Files.readAllBytes(path));
 	    String fileName = "./output/test.enc";
 		
 	    // encrypt
 		encryptor.encryptToFile(content, fileName);
-		
-		
 		
 		// integrate with PTBRE
 		String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());

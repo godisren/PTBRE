@@ -32,28 +32,79 @@ public class PerformanceMain {
 	public static String cipher = "AES/CBC/PKCS5Padding";
 	public final static String perfomanceLogFormat = "%s\t%s";
 
-	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+	public static void main(String[] args) throws Exception {
 		String content = "GANmMYFfG89muwQzZlm8w4Iw5sHoL2tqPUprONSOeJx3K6Eb2sCkLk4hP7LhZ7ab7nB7WQIqbDO0L95dKqVO8MxDU1PPJ0e7I6cY";
 		
 		List<PTBREMetric> metrics = new ArrayList();
+		int batchSizePerRun = 5;
 		
-		metrics.add(testPerformance(1, 20, 10, content));
-		metrics.add(testPerformance(10, 20, 10, content));		
-		metrics.add(testPerformance(50, 20, 10, content));		
-		metrics.add(testPerformance(100, 20, 10, content));	
-		metrics.add(testPerformance(200, 20, 10, content));		
-		metrics.add(testPerformance(300, 20, 10, content));		
-		metrics.add(testPerformance(500, 20, 10, content));
 		
-		System.out.println(String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s", 
-				"max_user", "GenKey", "encrypt", "decrypt1",
+		// case 0
+		metrics.add(batchExecute(2, 10, 10, 5, content));
+		metrics.add(batchExecute(20, 10, 5, 3, content));
+		
+		
+		// case 1
+//		metrics.add(batchExecute(batchSizePerRun, 10, 55, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 45, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 40, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 35, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 30, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 25, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 20, 10, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 15, 10, content));
+		
+		
+		// case 2
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 48, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 45, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 40, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 35, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 30, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 25, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 20, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 15, content));
+//		metrics.add(batchExecute(batchSizePerRun, 10, 50, 10, content));
+		
+		
+		System.out.println(String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s", 
+				"max_user", "N", "K", "GenKey", "encrypt", "decrypt1",
 				"GenRk", "reEnc", "decrypt2"));
 		
 		for(PTBREMetric m: metrics) {
-			System.out.println(String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s", 
-									m.max_user, m.GenKey, m.encrypt, m.decrypt1,
+			System.out.println(String.format("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s", 
+									m.max_user, m.N, m.K, m.GenKey, m.encrypt, m.decrypt1,
 									m.GenRk, m.reEnc, m.decrypt2));
 		}
+	}
+	
+	static public PTBREMetric batchExecute(int batchSize, int max_user, int N, int K, String content) throws Exception {
+		
+		PTBREMetric avgMetric = new PTBREMetric();
+		for(int i = 0;i<batchSize;i++) {
+			PTBREMetric m = testPerformance(max_user, N, K, content);
+			avgMetric.GenKey += m.GenKey;
+			avgMetric.encrypt += m.encrypt;
+			avgMetric.decrypt1 += m.decrypt1;
+			avgMetric.GenRk += m.GenRk;
+			avgMetric.reEnc += m.reEnc;
+			avgMetric.decrypt2 += m.decrypt2;
+		}
+		
+		System.out.println("average on batch size="+batchSize);
+		avgMetric.max_user = max_user;
+		avgMetric.N = N;
+		avgMetric.K = K;
+		avgMetric.GenKey = avgMetric.GenKey / batchSize;
+		avgMetric.encrypt = avgMetric.encrypt / batchSize;
+		avgMetric.decrypt1 = avgMetric.decrypt1 / batchSize;
+		avgMetric.GenRk = avgMetric.GenRk / batchSize;
+		avgMetric.reEnc = avgMetric.reEnc / batchSize;
+		avgMetric.decrypt2 = avgMetric.decrypt2 / batchSize;
+		
+		return avgMetric;
+		
 	}
 	
 	static public PTBREMetric testPerformance(int max_user, int N, int K, String content) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
@@ -66,6 +117,8 @@ public class PerformanceMain {
 		
 		System.out.println("max_user:"+max_user);
 		metric.max_user = max_user;
+		metric.N = N;
+		metric.K = K;
 		
 		// 1. init
 		Instant start = getStartTime();
@@ -140,21 +193,22 @@ public class PerformanceMain {
 		
 		// 6. ReEncrypt
 		start = getStartTime();
-		CFrag[] cFrags = new CFrag[kFrags.length];
-		for(int i=0; i< kFrags.length; i++)
+		CFrag[] cFrags = new CFrag[K];
+		for(int i=0; i< K; i++)
 			cFrags[i] = engine.reEnc(pk, kFrags[i], alice_idx, S, newS, C);
 		
 		metric.reEnc = printEndTimeAndElapsed("reEnc", start);
 		
 		
 		// 6. Decrypt
-		start = getStartTime();
-		CFrag[] cFragsForDecrypt = new CFrag[K];
-		for(int i = 0;i<K;i++) {
-			cFragsForDecrypt[i] = cFrags[i];
-		}
-		
 		for(int i = 0;i<max_user; i++) {
+			start = getStartTime();
+			CFrag[] cFragsForDecrypt = new CFrag[K];
+			for(int j = 0;j<K;j++) {
+				cFragsForDecrypt[j] = cFrags[j];
+			}
+			
+			
 			String symmetricKeyStrFromDc2 = 
 					Util.bytesToString(engine.decrypt_2(pk, delegatees[i], alice_idx, i+1, S, newS, cFragsForDecrypt));
 			
@@ -165,7 +219,8 @@ public class PerformanceMain {
 			
 //			System.out.println(recoverContentFromDc2);
 		}
-		metric.decrypt2 = printEndTimeAndElapsed("decrypt2", start);
+		// average per user
+		metric.decrypt2 = printEndTimeAndElapsed("decrypt2", start) / max_user;
 		
 		System.out.println("");
 		
@@ -190,6 +245,8 @@ public class PerformanceMain {
 	
 	public static class PTBREMetric{
 		int max_user = 0;
+		int N = 0;
+		int K = 0;
 		long GenKey = 0;
 		long encrypt = 0;
 		long decrypt1 = 0;

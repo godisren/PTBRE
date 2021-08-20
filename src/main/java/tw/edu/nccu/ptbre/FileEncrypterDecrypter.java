@@ -66,11 +66,12 @@ public class FileEncrypterDecrypter {
                     BufferedReader reader = new BufferedReader(inputReader)
                 ) {
             	
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
+            	StringBuilder sb = new StringBuilder();
+                int value;
+                while ((value = reader.read()) != -1) {
+                    sb.append((char) value);
                 }
+            	
                 content = sb.toString();
             }
 

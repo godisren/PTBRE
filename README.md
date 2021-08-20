@@ -1,4 +1,29 @@
-install depend external libs
+# The implementation of PTBRE (Proxy Threshold Broadcast ReEncryption)
+
+## Introduction
+
+
+ - School : National Chengchi University
+ - Advisror : Raylin Tso
+ - Author (Student) : RenJr Huang
+
+This is the implementation of my thesis in NCCU (National Chengchi University) in 2021. 
+The paper names **Development of Proxy Threshold Broadcast Re­Encryption for NuCypher**.
+
+We propose a new schema to enhance the Umbral that is the NuCypher cryptography scheme used to share the file in decentralized environment (runs on Ethereum Smart Contract). The Umbral can only shares a file 1 on 1 which means the data owner only delegates the decryption right of the shared file to a receiver. If we want to share to N receivers, the Umbral scheme need to set the decryption right 1 by 1 until finishing all the setting for N receivers. 
+
+Hence, our PTBRE scheme can do the share for N receivers in the mean time. Especially, the receivers use their individual private key to decrypt the shared file not maintain the same shared key. we leverage the cryptography schemes including ReEncrypption, Secrete Sharing and Broadcast Encryption. Finally, This repository keep our implementation code of PTBRE.
+
+## Development Environment
+- JDK 8
+- maven
+
+## Reference Library
+- jpbc 2.0.0
+- bouncycastle
+- `cn.edu.buaa.crypto.utils.PairingUtils` in [CloudCrypto](https://github.com/liuweiran900217/CloudCrypto) (refer to it's Bilinear Paring Utility Implementation)
+
+## Install External Dependency Libraries
 
 ```sh
 mvn install:install-file -Dfile=jpbc-api-2.0.0.jar -DgroupId=it.unisa.dia.gas.jpbc -DartifactId=jpbc-api -Dversion=2.0.0 -Dpackaging=jar
@@ -8,12 +33,24 @@ mvn install:install-file -Dfile=jpbc-crypto-2.0.0.jar -DgroupId=it.unisa.dia.gas
 mvn install:install-file -Dfile=jpbc-plaf-2.0.0.jar -DgroupId=it.unisa.dia.gas.jpbc -DartifactId=jpbc-plaf -Dversion=2.0.0 -Dpackaging=jar
 ```
 
+## Build the artificial file
+
 build executable jar
 
 ```sh
 mvn compile assembly:single
 ```
 
+we can find the artificial file in `./target/nccu-ptbre.jar`
+
+## Execute performance test
+
+```sh
+java -cp nccu-ptbre.jar tw.edu.nccu.ptbre.PerformanceMain
+```
+
+
+## Execute PTBRE application
 
 ```sh
 $ java nccu-ptbre.jar setup -n 10

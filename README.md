@@ -1,4 +1,4 @@
-# The implementation of PTBRE (Proxy Threshold Broadcast ReEncryption)
+# Proxy Threshold Broadcast ReEncryption
 
 ## Introduction
 
@@ -8,11 +8,11 @@
  - Author (Student) : RenJr Huang
 
 This is the implementation of my thesis in NCCU (National Chengchi University) in 2021. 
-The paper names **Development of Proxy Threshold Broadcast Re­Encryption for NuCypher**.
+The paper names **Development of Proxy Threshold Broadcast Re­Encryption for NuCypher** (PTBRE).
 
 We propose a new schema to enhance the Umbral that is the NuCypher cryptography scheme used to share the file in decentralized environment (runs on Ethereum Smart Contract). The Umbral can only shares a file 1 on 1 which means the data owner only delegates the decryption right of the shared file to a receiver. If we want to share to N receivers, the Umbral scheme need to set the decryption right 1 by 1 until finishing all the setting for N receivers. 
 
-Hence, our PTBRE scheme can do the share for N receivers in the mean time. Especially, the receivers use their individual private key to decrypt the shared file not maintain the same shared key. we leverage the cryptography schemes including ReEncrypption, Secrete Sharing and Broadcast Encryption. Finally, This repository keep our implementation code of PTBRE.
+Hence, our PTBRE scheme can do the share for N receivers in the mean time. Especially, the receivers use their individual private key to decrypt the shared file rather than maintaining the same shared key. we leverage the cryptography schemes including ReEncryption, Secrete Sharing and Broadcast Encryption. Finally, we finish our implementation code of PTBRE in this repository.
 
 ## Development Environment
 - JDK 8
